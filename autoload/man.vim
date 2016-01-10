@@ -6,23 +6,21 @@ endif
 let g:autoloaded_man = 1
 
 " }}}
-" variable initialization {{{1
-
-let s:man_tag_depth = 0
-
-" }}}
 " man#get_page {{{1
 
 function! man#get_page(split_type, ...)
   if a:0 == 0
-    call s:handle_nroff_file_or_error(a:split_type)
+    call man#helpers#error("Argument required.")
     return
   elseif a:0 == 1
     let sect = ''
     let page = a:1
-  elseif a:0 >= 2
+  elseif a:0 == 2
     let sect = a:1
     let page = a:2
+  else
+    call man#helpers#error("Too many arguments.")
+    return
   endif
 
   if sect !=# '' && !s:manpage_exists(sect, page)
@@ -33,10 +31,8 @@ function! man#get_page(split_type, ...)
     return
   endif
 
-  call s:update_man_tag_variables()
   call s:get_new_or_existing_man_window(a:split_type)
-  call man#helpers#set_manpage_buffer_name(page, sect)
-  call man#helpers#load_manpage_text(page, sect)
+  call s:load_manpage(sect, page)
 endfunction
 
 function! s:manpage_exists(sect, page)
@@ -54,88 +50,20 @@ function! s:manpage_exists(sect, page)
   endif
 endfunction
 
-" }}}
-" :Man command in nroff files {{{1
+function! s:load_manpage(...)
+  call termopen('man ' . join(a:000, ' '))
+  setlocal syntax=man
 
-" handles :Man command invocation with zero arguments
-function! s:handle_nroff_file_or_error(split_type)
-  " :Man command can be invoked in 'nroff' files to convert it to a manpage
-  if &filetype ==# 'nroff'
-    if filereadable(expand('%'))
-      return s:get_nroff_page(a:split_type, expand('%:p'))
-    else
-      return man#helpers#error("Can't open file ".expand('%'))
-    endif
-  else
-    " simulating vim's error when not enough args provided
-    return man#helpers#error('E471: Argument required')
-  endif
-endfunction
+  tnoremap <silent> <buffer> q <C-\><C-n>:bd!<CR>
+  tnoremap <C-w> <C-\><C-n><C-w>
+  doau User ManOpen
 
-" open a nroff file as a manpage
-function! s:get_nroff_page(split_type, nroff_file)
-  call s:update_man_tag_variables()
-  call s:get_new_or_existing_man_window(a:split_type)
-  silent exec 'edit '.fnamemodify(a:nroff_file, ':t').'\ manpage\ (from\ nroff)'
-  call man#helpers#load_manpage_text(a:nroff_file, '')
-endfunction
-
-" }}}
-" man#get_page_from_cword {{{1
-
-function! man#get_page_from_cword(split_type, cnt)
-  if a:cnt == 0
-    let old_isk = &iskeyword
-    if &filetype ==# 'man'
-      " when in a manpage try determining section from a word like this 'printf(3)'
-      setlocal iskeyword+=(,),:
-    endif
-    let str = expand('<cword>')
-    let &l:iskeyword = old_isk
-    let page = matchstr(str, '\(\k\|:\)\+')
-    let sect = matchstr(str, '(\zs[^)]*\ze)')
-    if sect !~# '^[0-9nlpo][a-z]*$' || sect ==# page
-      let sect = ''
-    endif
-  else
-    let sect = a:cnt
-    let old_isk = &iskeyword
-    setlocal iskeyword+=:
-    let page = expand('<cword>')
-    let &l:iskeyword = old_isk
-  endif
-  call man#get_page(a:split_type, sect, page)
-endfunction
-
-" }}}
-" man#pop_page {{{1
-
-function! man#pop_page()
-  if s:man_tag_depth <= 0
-    return
-  endif
-  let s:man_tag_depth -= 1
-  let buffer = s:man_tag_buf_{s:man_tag_depth}
-  let line   = s:man_tag_lin_{s:man_tag_depth}
-  let column = s:man_tag_col_{s:man_tag_depth}
-  " jumps to exact buffer, line and column
-  exec buffer.'b'
-  exec line
-  exec 'norm! '.column.'|'
-  unlet s:man_tag_buf_{s:man_tag_depth}
-  unlet s:man_tag_lin_{s:man_tag_depth}
-  unlet s:man_tag_col_{s:man_tag_depth}
+  au BufEnter <buffer> startinsert
+  startinsert
 endfunction
 
 " }}}
 " script local helpers {{{1
-
-function! s:update_man_tag_variables()
-  let s:man_tag_buf_{s:man_tag_depth} = bufnr('%')
-  let s:man_tag_lin_{s:man_tag_depth} = line('.')
-  let s:man_tag_col_{s:man_tag_depth} = col('.')
-  let s:man_tag_depth += 1
-endfunction
 
 function! s:get_new_or_existing_man_window(split_type)
   if &filetype != 'man'
