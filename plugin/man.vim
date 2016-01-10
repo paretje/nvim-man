@@ -11,17 +11,20 @@ if !exists('g:vim_man_cmd')
   let g:vim_man_cmd='/usr/bin/man'
 endif
 
-command! -nargs=* -bar -complete=customlist,man#completion#run Man  call man#get_page('horizontal', <f-args>)
-command! -nargs=* -bar -complete=customlist,man#completion#run Sman call man#get_page('horizontal', <f-args>)
-command! -nargs=* -bar -complete=customlist,man#completion#run Vman call man#get_page('vertical',   <f-args>)
-command! -nargs=* -bar -complete=customlist,man#completion#run Tman call man#get_page('tab',        <f-args>)
+if !exists('g:nvim_man_default_target')
+  let g:nvim_man_default_target='vertical'
+endif
 
-command! -nargs=+ -bang Mangrep call man#grep#run(<bang>0, <f-args>)
+command! -nargs=* -bar -complete=customlist,man#completion#run Man  call man#get_page(g:nvim_man_default_target, <f-args>)
+command! -nargs=* -bar -complete=customlist,man#completion#run Sman call man#get_page('horizontal', <f-args>)
+command! -nargs=* -bar -complete=customlist,man#completion#run Vman call man#get_page('vertical', <f-args>)
+command! -nargs=* -bar -complete=customlist,man#completion#run Tman call man#get_page('tab', <f-args>)
 
 " map a key to open a manpage for word under cursor, example: map ,k <Plug>(Man)
-nnoremap <silent> <Plug>(Man)  :<C-U>call man#get_page_from_cword('horizontal', v:count)<CR>
+nnoremap <silent> <Plug>(Man)  :<C-U>call man#get_page_from_cword(g:nvim_man_default_target, v:count)<CR>
 nnoremap <silent> <Plug>(Sman) :<C-U>call man#get_page_from_cword('horizontal', v:count)<CR>
-nnoremap <silent> <Plug>(Vman) :<C-U>call man#get_page_from_cword('vertical',   v:count)<CR>
+nnoremap <silent> <Plug>(Vman) :<C-U>call man#get_page_from_cword('vertical', v:count)<CR>
+nnoremap <silent> <Plug>(Tman) :<C-U>call man#get_page_from_cword('tab', v:count)<CR>
 
 let &cpo = s:save_cpo
 unlet s:save_cpo
