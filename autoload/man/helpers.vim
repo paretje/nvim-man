@@ -48,57 +48,6 @@ function! man#helpers#get_cmd_arg(sect, page)
 endfunction
 
 " }}}
-" man#helpers#set_manpage_buffer_name {{{1
-
-function! man#helpers#set_manpage_buffer_name(page, section)
-  silent exec 'edit '.s:manpage_buffer_name(a:page, a:section)
-endfunction
-
-function! s:manpage_buffer_name(page, section)
-  if !empty(a:section)
-    return a:page.'('.a:section.')\ manpage'
-  else
-    return a:page.'\ manpage'
-  endif
-endfunction
-
-" }}}
-" man#helpers#load_manpage_text {{{1
-
-function! man#helpers#load_manpage_text(page, section)
-  setlocal modifiable
-  silent keepj norm! 1GdG
-  let $MANWIDTH = man#helpers#manwidth()
-  silent exec 'r!'.g:vim_man_cmd.' '.man#helpers#get_cmd_arg(a:section, a:page). ' 2>/dev/null | col -b'
-  call s:remove_blank_lines_from_top_and_bottom()
-  setlocal filetype=man
-  setlocal nomodifiable
-endfunction
-
-function! s:remove_blank_lines_from_top_and_bottom()
-  while line('$') > 1 && getline(1) =~ '^\s*$'
-    silent keepj norm! ggdd
-  endwhile
-  while line('$') > 1 && getline('$') =~ '^\s*$'
-    silent keepj norm! Gdd
-  endwhile
-  silent keepj norm! gg
-endfunction
-
-" }}}
-" man#helpers#manwidth {{{1
-
-" Default manpage width is the width of the screen. Change this with
-" 'g:man_width'. Example: 'let g:man_width = 120'.
-function! man#helpers#manwidth()
-  if exists('g:man_width')
-    return g:man_width
-  else
-    return winwidth(0)
-  end
-endfunction
-
-" }}}
 " man#helpers#extract_permitted_section_value {{{1
 
 function! man#helpers#extract_permitted_section_value(section_arg)
