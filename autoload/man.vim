@@ -54,12 +54,9 @@ function! s:load_manpage(...)
   call termopen('man ' . join(a:000, ' '))
   setlocal syntax=man
 
-  tnoremap <silent> <buffer> q <C-\><C-n>:bd!<CR>
-  tnoremap <C-w> <C-\><C-n><C-w>
-  doau User ManOpen
-
-  au BufEnter <buffer> startinsert
   startinsert
+  au BufEnter <buffer> startinsert
+  doau User ManOpen
 endfunction
 
 " }}}

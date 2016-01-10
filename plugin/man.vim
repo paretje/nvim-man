@@ -26,6 +26,10 @@ nnoremap <silent> <Plug>(Sman) :<C-U>call man#get_page_from_cword('horizontal', 
 nnoremap <silent> <Plug>(Vman) :<C-U>call man#get_page_from_cword('vertical', v:count)<CR>
 nnoremap <silent> <Plug>(Tman) :<C-U>call man#get_page_from_cword('tab', v:count)<CR>
 
+" add mappings in manpage
+au User ManOpen tnoremap <silent> <buffer> q <C-\><C-n>:bd!<CR>
+au User ManOpen tnoremap <C-w> <C-\><C-n><C-w>
+
 let &cpo = s:save_cpo
 unlet s:save_cpo
 
