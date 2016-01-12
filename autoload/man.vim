@@ -1,12 +1,7 @@
-" load guard {{{1
-
 if exists('g:autoloaded_man')
   finish
 endif
 let g:autoloaded_man = 1
-
-" }}}
-" man#get_page {{{1
 
 function! man#get_page(split_type, ...)
   if a:0 == 0
@@ -59,36 +54,16 @@ function! s:load_manpage(...)
   doau User ManOpen
 endfunction
 
-" }}}
-" script local helpers {{{1
-
 function! s:get_new_or_existing_man_window(split_type)
-  if &filetype != 'man'
-    let thiswin = winnr()
-    exec "norm! \<C-W>b"
-    if winnr() > 1
-      exec 'norm! '.thiswin."\<C-W>w"
-      while 1
-        if &filetype == 'man'
-          break
-        endif
-        exec "norm! \<C-W>w"
-        if thiswin == winnr()
-          break
-        endif
-      endwhile
-    endif
-    if &filetype != 'man'
-      if a:split_type == 'vertical'
-        vnew
-      elseif a:split_type == 'tab'
-        tabnew
-      else
-        new
-      endif
-    endif
+  if a:split_type == 'current' || &syntax == 'man'
+    enew
+  elseif a:split_type == 'vertical'
+    vnew
+  elseif a:split_type == 'tab'
+    tabnew
+  else
+    new
   endif
 endfunction
 
-" }}}
 " vim:set ft=vim et sw=2:
