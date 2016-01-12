@@ -30,6 +30,15 @@ function! man#get_page(split_type, ...)
   call s:load_manpage(sect, page)
 endfunction
 
+function! s:load_manpage(...)
+  call termopen('man ' . join(a:000, ' '))
+  setlocal syntax=man
+
+  startinsert
+  au BufEnter <buffer> startinsert
+  doau User ManOpen
+endfunction
+
 function! s:manpage_exists(sect, page)
   if a:page ==# ''
     return 0
@@ -43,15 +52,6 @@ function! s:manpage_exists(sect, page)
     " found a manpage
     return 1
   endif
-endfunction
-
-function! s:load_manpage(...)
-  call termopen('man ' . join(a:000, ' '))
-  setlocal syntax=man
-
-  startinsert
-  au BufEnter <buffer> startinsert
-  doau User ManOpen
 endfunction
 
 function! s:get_new_or_existing_man_window(split_type)
