@@ -57,12 +57,21 @@ endfunction
 function! s:get_new_or_existing_man_window(split_type)
   if a:split_type == 'current' || &syntax == 'man'
     enew
-  elseif a:split_type == 'vertical'
-    vnew
-  elseif a:split_type == 'tab'
-    tabnew
   else
-    new
+    let l:winnr = winnr()
+    wincmd w
+    while l:winnr != winnr() && &syntax != 'man'
+      wincmd w
+    endwhile
+    if &syntax == 'man'
+      enew
+    elseif a:split_type == 'vertical'
+      vnew
+    elseif a:split_type == 'tab'
+      tabnew
+    else
+      new
+    endif
   endif
 endfunction
 
