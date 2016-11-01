@@ -8,19 +8,21 @@ function! man#terminal#get_page(split_type, ...)
     call man#helpers#error("Argument required.")
     return
   elseif a:0 == 1
-    let sect = ''
-    let page = a:1
+    let l:ref = a:1
   elseif a:0 == 2
-    let sect = a:1
-    let page = a:2
+    let l:ref = a:2 . '(' . a:1 . ')'
   else
     call man#helpers#error("Too many arguments.")
     return
   endif
 
-  if sect !=# '' && !s:manpage_exists(sect, page)
-    let sect = ''
-  endif
+  try
+    let [l:sect, l:page] = man#extract_sect_and_name_ref(l:ref)
+  catch
+    call man#helpers#error(v:exception)
+    return
+  endtry
+
   if !s:manpage_exists(sect, page)
     call man#helpers#error("No manual entry for '".page."'.")
     return
@@ -30,8 +32,10 @@ function! man#terminal#get_page(split_type, ...)
   call s:load_manpage(sect, page)
 endfunction
 
-function! s:load_manpage(...)
-  call termopen('man ' . join(a:000, ' '))
+function! s:load_manpage(sect, page)
+  call termopen('man ' . a:sect . ' ' . a:page)
+
+  let b:man_sect = a:sect
   setlocal syntax=man
 
   startinsert
