@@ -3,7 +3,7 @@ if exists('g:autoloaded_man')
 endif
 let g:autoloaded_man = 1
 
-function! man#get_page(split_type, ...)
+function! man#terminal#get_page(split_type, ...)
   if a:0 == 0
     call man#helpers#error("Argument required.")
     return

@@ -15,16 +15,16 @@ if !exists('g:nvim_man_default_target')
   let g:nvim_man_default_target='vertical'
 endif
 
-command! -nargs=* -bar -complete=customlist,man#completion Man  call man#get_page(g:nvim_man_default_target, <f-args>)
-command! -nargs=* -bar -complete=customlist,man#completion Sman call man#get_page('horizontal', <f-args>)
-command! -nargs=* -bar -complete=customlist,man#completion Vman call man#get_page('vertical', <f-args>)
-command! -nargs=* -bar -complete=customlist,man#completion Tman call man#get_page('tab', <f-args>)
+command! -nargs=* -bar -complete=customlist,man#complete Man  call man#terminal#get_page(g:nvim_man_default_target, <f-args>)
+command! -nargs=* -bar -complete=customlist,man#complete Sman call man#terminal#get_page('horizontal', <f-args>)
+command! -nargs=* -bar -complete=customlist,man#complete Vman call man#terminal#get_page('vertical', <f-args>)
+command! -nargs=* -bar -complete=customlist,man#complete Tman call man#terminal#get_page('tab', <f-args>)
 
 " map a key to open a manpage for word under cursor, example: map ,k <Plug>(Man)
-nnoremap <silent> <Plug>(Man)  :<C-U>call man#get_page_from_cword(g:nvim_man_default_target, v:count)<CR>
-nnoremap <silent> <Plug>(Sman) :<C-U>call man#get_page_from_cword('horizontal', v:count)<CR>
-nnoremap <silent> <Plug>(Vman) :<C-U>call man#get_page_from_cword('vertical', v:count)<CR>
-nnoremap <silent> <Plug>(Tman) :<C-U>call man#get_page_from_cword('tab', v:count)<CR>
+nnoremap <silent> <Plug>(Man)  :<C-U>call man#terminal#get_page_from_cword(g:nvim_man_default_target, v:count)<CR>
+nnoremap <silent> <Plug>(Sman) :<C-U>call man#terminal#get_page_from_cword('horizontal', v:count)<CR>
+nnoremap <silent> <Plug>(Vman) :<C-U>call man#terminal#get_page_from_cword('vertical', v:count)<CR>
+nnoremap <silent> <Plug>(Tman) :<C-U>call man#terminal#get_page_from_cword('tab', v:count)<CR>
 
 " add mappings in manpage
 au User ManOpen tnoremap <silent> <buffer> q <C-\><C-n>:bd!<CR>
