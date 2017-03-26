@@ -26,11 +26,15 @@ nnoremap <silent> <Plug>(Sman) :<C-U>call man#terminal#get_page_from_cword('hori
 nnoremap <silent> <Plug>(Vman) :<C-U>call man#terminal#get_page_from_cword('vertical', v:count)<CR>
 nnoremap <silent> <Plug>(Tman) :<C-U>call man#terminal#get_page_from_cword('tab', v:count)<CR>
 
-" enable window key in manpage
-au User ManOpen tnoremap <C-w> <C-\><C-n><C-w>
+augroup nvim_man
+  au!
 
-" close window when quiting
-au User ManOpen au TermClose <buffer> close
+  " enable window key in manpage
+  au User ManOpen tnoremap <C-w> <C-\><C-n><C-w>
+
+  " close window when quiting
+  au User ManOpen au TermClose <buffer> close
+augroup END
 
 let &cpo = s:save_cpo
 unlet s:save_cpo
