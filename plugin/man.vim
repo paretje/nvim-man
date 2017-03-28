@@ -30,7 +30,7 @@ augroup nvim_man
   au!
 
   " enable window key in manpage
-  au User ManOpen tnoremap <C-w> <C-\><C-n><C-w>
+  au User ManOpen tnoremap <buffer> <C-w> <C-\><C-n><C-w>
 
   " close window when quiting
   au User ManOpen au TermClose <buffer> close
