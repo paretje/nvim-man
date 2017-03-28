@@ -39,7 +39,6 @@ function! s:load_manpage(sect, page)
   setlocal syntax=man
 
   startinsert
-  au BufEnter <buffer> startinsert
   doau User ManOpen
 endfunction
 

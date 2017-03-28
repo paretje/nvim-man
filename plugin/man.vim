@@ -29,6 +29,9 @@ nnoremap <silent> <Plug>(Tman) :<C-U>call man#terminal#get_page_from_cword('tab'
 augroup nvim_man
   au!
 
+  " automatically enter terminal mode
+  au User ManOpen au BufEnter <buffer> startinsert
+
   " enable window key in manpage
   au User ManOpen tnoremap <buffer> <C-w> <C-\><C-n><C-w>
 
